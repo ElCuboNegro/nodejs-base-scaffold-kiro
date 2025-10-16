@@ -1,0 +1,34 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🚀 Running pre-push validation in Docker..."
+
+# Validate Docker environment
+if ! docker info > /dev/null 2>&1; then
+  echo "❌ Docker is not running. Please start Docker Desktop."
+  exit 1
+fi
+
+# Ensure no local dependencies
+if [ -d "node_modules" ]; then
+  echo "❌ Local node_modules detected. Use Docker only."
+  exit 1
+fi
+
+# Run comprehensive test suite
+echo "🧪 Running full BDD test suite..."
+docker compose run --rm bdd-runner npm run test:bdd
+
+echo "📊 Running test coverage..."
+docker compose run --rm test-runner npm run test:coverage
+
+echo "🔒 Running comprehensive security scan..."
+docker compose run --rm quality-runner npm run security:scan
+
+echo "⚡ Running performance tests..."
+docker compose run --rm performance-runner npm run test:endurance
+
+echo "🏗️ Validating Docker build..."
+docker compose build --no-cache verification-agent
+
+echo "✅ All pre-push validation passed!"

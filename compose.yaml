@@ -1,0 +1,145 @@
+# Docker Compose configuration for AI Voice Verification Agent
+# Ensures all development and testing happens in containerized environment
+
+services:
+  # Main application service
+  verification-agent:
+    build:
+      context: .
+      target: development
+    ports:
+      - '5253:5253'
+    environment:
+      - NODE_ENV=development
+      - LLM_API_KEY=${LLM_API_KEY:-}
+      - JOB_TENURE_THRESHOLD=24
+      - DATABASE_URL=postgresql://verification_user:${DB_PASSWORD:-password}@postgres:5432/verification_db
+      - REDIS_URL=redis://redis:6379
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-development-key}
+      - SESSION_SECRET=${SESSION_SECRET:-development-secret}
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+      - reports:/app/reports
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - verification-network
+
+  # PostgreSQL database for audit logs and transactions
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=verification_db
+      - POSTGRES_USER=verification_user
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-password}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./src/database/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - verification-network
+
+  # Redis for session state management
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - verification-network
+
+  # Dedicated test runner service
+  test-runner:
+    build:
+      context: .
+      target: test
+    environment:
+      - NODE_ENV=test
+      - DATABASE_URL=postgresql://test_user:${DB_PASSWORD:-password}@postgres:5432/verification_test_db
+      - REDIS_URL=redis://redis:6379
+      - CUCUMBER_PUBLISH_ENABLED=false
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+      - reports:/app/reports
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - verification-network
+    profiles:
+      - testing
+
+  # BDD test runner - specific for Cucumber tests
+  bdd-runner:
+    build:
+      context: .
+      target: test
+    environment:
+      - NODE_ENV=test
+      - CUCUMBER_PUBLISH_ENABLED=false
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+      - reports:/app/reports
+    working_dir: /app
+    networks:
+      - verification-network
+    profiles:
+      - bdd
+
+  # Quality tools runner
+  quality-runner:
+    build:
+      context: .
+      target: test
+    environment:
+      - NODE_ENV=test
+      - SNYK_TOKEN=${SNYK_TOKEN:-}
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+      - reports:/app/reports
+    working_dir: /app
+    networks:
+      - verification-network
+    profiles:
+      - quality
+
+  # Performance testing runner
+  performance-runner:
+    build:
+      context: .
+      target: test
+    environment:
+      - NODE_ENV=test
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+      - reports:/app/reports
+    working_dir: /app
+    depends_on:
+      - verification-agent
+    networks:
+      - verification-network
+    profiles:
+      - performance
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  node_modules:
+    driver: local
+  reports:
+    driver: local
+
+networks:
+  verification-network:
+    driver: bridge

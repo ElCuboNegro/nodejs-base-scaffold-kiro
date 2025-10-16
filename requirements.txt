@@ -1,0 +1,32 @@
+# Python requirements for pre-commit and development tools
+# Used by pre-commit framework and CI/CD pipeline
+
+# Pre-commit framework
+pre-commit>=3.0.0,<4.0.0
+
+# YAML processing (for validating YAML files)
+PyYAML>=6.0,<7.0
+
+# JSON schema validation
+jsonschema>=4.0.0,<5.0.0
+
+# Markdown linting (using Node.js version via pre-commit hooks)
+
+# Code formatting and linting tools
+black>=23.0.0,<24.0.0  # Python code formatter (if we add Python code)
+flake8>=6.0.0,<7.0.0   # Python linter (if we add Python code)
+
+# Security scanning
+bandit>=1.7.0,<2.0.0   # Python security linter (if we add Python code)
+safety>=2.0.0,<3.0.0   # Dependency vulnerability scanner
+
+# Documentation tools
+sphinx>=7.0.0,<8.0.0   # Documentation generator (if needed)
+
+# Testing tools (if we add Python tests)
+pytest>=7.0.0,<8.0.0
+pytest-cov>=4.0.0,<5.0.0
+
+# Development utilities
+pip-tools>=7.0.0,<8.0.0  # Dependency management
+wheel>=0.40.0,<1.0.0     # Package building

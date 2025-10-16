@@ -1,0 +1,202 @@
+{
+  "name": "ai-voice-verification-agent",
+  "version": "1.0.0",
+  "description": "Node.js conversational verification system for financial services conducting secure identity verification through voice-optimized interactions",
+  "main": "src/index.js",
+  "engines": {
+    "node": ">=24.10.0",
+    "npm": ">=10.0.0"
+  },
+  "scripts": {
+    "preinstall": "if [ \"$DOCKER_CONTAINER\" != \"true\" ]; then echo '❌ FORBIDDEN: Use docker compose run --rm verification-agent npm install' && exit 1; fi",
+    "start": "echo '❌ FORBIDDEN: Use docker compose up verification-agent' && exit 1",
+    "dev": "echo '❌ FORBIDDEN: Use docker compose run --rm verification-agent npm run dev' && exit 1",
+    "test": "echo '❌ FORBIDDEN: Use docker compose run --rm test-runner npm run test' && exit 1",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:bdd": "cucumber-js --config cucumber.js",
+    "test:bdd:identity": "cucumber-js --profile identity",
+    "test:bdd:financial": "cucumber-js --profile financial",
+    "test:bdd:failures": "cucumber-js --profile failures",
+    "test:bdd:watch": "cucumber-js --config cucumber.js --watch",
+    "test:bdd:project": "cucumber-js --tags '@project-setup'",
+    "test:bdd:quality": "cucumber-js --tags '@code-quality'",
+    "test:bdd:security": "cucumber-js --tags '@security'",
+    "test:bdd:performance": "cucumber-js --tags '@performance'",
+    "test:bdd:ci-cd": "cucumber-js --tags '@ci-cd'",
+    "test:bdd:docs": "cucumber-js --tags '@documentation'",
+    "test:integration": "jest --testPathPattern=integration",
+    "test:unit": "jest --testPathPattern=unit",
+    "test:endurance": "artillery run tests/artillery.yml",
+    "lint": "echo '❌ FORBIDDEN: Use docker compose run --rm quality-runner npm run lint' && exit 1",
+    "lint:fix": "echo '❌ FORBIDDEN: Use docker compose run --rm quality-runner npm run lint:fix' && exit 1",
+    "format": "echo '❌ FORBIDDEN: Use docker compose run --rm quality-runner npm run format' && exit 1",
+    "format:check": "echo '❌ FORBIDDEN: Use docker compose run --rm quality-runner npm run format:check' && exit 1",
+    "security:scan": "echo '❌ FORBIDDEN: Use docker compose run --rm quality-runner npm run security:scan' && exit 1",
+    "security:audit": "npm audit --audit-level moderate",
+    "security:licenses": "license-checker --onlyAllow \"MIT;Apache-2.0;BSD-3-Clause;ISC\"",
+    "docs:generate": "jsdoc -c jsdoc.config.json",
+    "docs:validate": "jsdoc --validate src/",
+    "quality:check": "npm run lint && npm run format:check && npm run security:scan && npm run test:coverage",
+    "quality:fix": "npm run lint:fix && npm run format",
+    "prepare": "husky install",
+    "precommit": "lint-staged",
+    "build": "echo 'Build process - Docker handles compilation'",
+    "docker:build": "docker build -t verification-agent .",
+    "docker:up": "docker compose up --build",
+    "docker:down": "docker compose down",
+    "docker:test": "docker compose run --rm test-runner npm run test:coverage",
+    "docker:test:bdd": "docker compose run --rm bdd-runner npm run test:bdd",
+    "docker:test:project": "docker compose run --rm bdd-runner npm run test:bdd:project",
+    "docker:test:quality": "docker compose run --rm bdd-runner npm run test:bdd:quality",
+    "docker:test:security": "docker compose run --rm bdd-runner npm run test:bdd:security",
+    "docker:test:performance": "docker compose run --rm bdd-runner npm run test:bdd:performance",
+    "docker:test:ci-cd": "docker compose run --rm bdd-runner npm run test:bdd:ci-cd",
+    "docker:test:docs": "docker compose run --rm bdd-runner npm run test:bdd:docs",
+    "docker:quality:check": "docker compose run --rm quality-runner npm run quality:check",
+    "docker:security:scan": "docker compose run --rm quality-runner npm run security:scan",
+    "docker:performance:test": "docker compose run --rm performance-runner npm run test:endurance",
+    "db:migrate": "echo 'Database migrations - handled by Docker Compose'",
+    "db:seed": "echo 'Database seeding - handled by Docker Compose'",
+    "simulate": "node scripts/conversation-simulator.js",
+    "_start": "node src/index.js",
+    "_dev": "nodemon src/index.js",
+    "_test": "jest",
+    "_lint": "eslint src/ tests/ --ext .js",
+    "_lint:fix": "eslint src/ tests/ --ext .js --fix",
+    "_format": "prettier --write \"src/**/*.js\" \"tests/**/*.js\" \"*.js\" \"*.json\" \"*.md\"",
+    "_format:check": "prettier --check \"src/**/*.js\" \"tests/**/*.js\" \"*.js\" \"*.json\" \"*.md\"",
+    "_security:scan": "npm audit && snyk test"
+  },
+  "keywords": [
+    "voice-verification",
+    "financial-services",
+    "identity-verification",
+    "conversational-ai",
+    "security",
+    "compliance"
+  ],
+  "author": "Development Team",
+  "license": "PROPRIETARY",
+  "dependencies": {
+    "express": "^4.18.2",
+    "joi": "^17.11.0",
+    "winston": "^3.11.0",
+    "redis": "^4.6.10",
+    "pg": "^8.11.3",
+    "sequelize": "^6.35.0",
+    "config": "^3.3.9",
+    "dotenv": "^16.3.1",
+    "helmet": "^7.1.0",
+    "cors": "^2.8.5",
+    "compression": "^1.7.4",
+    "rate-limiter-flexible": "^5.0.3",
+    "handlebars": "^4.7.8",
+    "openai": "^4.20.1",
+    "@anthropic-ai/sdk": "^0.9.1",
+    "axios": "^1.6.2",
+    "uuid": "^9.0.1",
+    "moment": "^2.29.4",
+    "validator": "^13.11.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "@jest/globals": "^29.7.0",
+    "supertest": "^6.3.3",
+    "sinon": "^17.0.1",
+    "nock": "^13.4.0",
+    "@cucumber/cucumber": "^10.0.1",
+    "artillery": "^2.0.3",
+    "eslint": "^8.54.0",
+    "eslint-config-google": "^0.14.0",
+    "prettier": "^3.1.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.1.0",
+    "nodemon": "^3.0.2",
+    "jsdoc": "^4.0.2",
+    "markdownlint-cli": "^0.37.0",
+    "markdown-toc": "^1.2.0",
+    "snyk": "^1.1248.0",
+    "license-checker": "^25.0.1",
+    "nyc": "^15.1.0",
+    "@types/jest": "^29.5.8",
+    "cross-env": "^7.0.3",
+    "rimraf": "^5.0.5",
+    "concurrently": "^8.2.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/company/ai-voice-verification-agent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/company/ai-voice-verification-agent/issues"
+  },
+  "homepage": "https://github.com/company/ai-voice-verification-agent#readme",
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverage": true,
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html",
+      "json"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    },
+    "testMatch": [
+      "**/tests/**/*.test.js",
+      "**/tests/**/*.spec.js"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/setup.js"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/index.js",
+      "!**/node_modules/**"
+    ]
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write",
+      "jsdoc --validate"
+    ],
+    "*.json": [
+      "prettier --write"
+    ],
+    "*.md": [
+      "markdownlint --fix",
+      "markdown-toc --update"
+    ],
+    "package*.json": [
+      "npm audit --audit-level moderate",
+      "license-checker --onlyAllow \"MIT;Apache-2.0;BSD-3-Clause;ISC\""
+    ]
+  },
+  "cucumber": {
+    "default": {
+      "require": [
+        "tests/steps/**/*.js"
+      ],
+      "format": [
+        "json:reports/cucumber.json",
+        "html:reports/cucumber.html",
+        "progress"
+      ],
+      "paths": [
+        "tests/features/**/*.feature"
+      ],
+      "parallel": 2,
+      "retry": 1,
+      "timeout": 30000
+    }
+  }
+}

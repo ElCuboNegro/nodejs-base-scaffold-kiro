@@ -1,0 +1,20 @@
+{
+  "*.{js,mjs,cjs}": [
+    "docker compose run --rm quality-runner npx eslint --fix",
+    "docker compose run --rm quality-runner npx prettier --write",
+    "docker compose run --rm quality-runner npx jsdoc --validate"
+  ],
+  "*.{json,md,yml,yaml}": [
+    "docker compose run --rm quality-runner npx prettier --write"
+  ],
+  "*.feature": [
+    "docker compose run --rm quality-runner npx markdownlint --fix",
+    "docker compose run --rm bdd-runner npx cucumber-js --dry-run"
+  ],
+  "package.json": [
+    "docker compose run --rm quality-runner npm audit --audit-level moderate",
+    "docker compose run --rm quality-runner npx license-checker --onlyAllow 'MIT;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC'"
+  ],
+  "Dockerfile": ["docker run --rm -i hadolint/hadolint"],
+  "compose.yaml": ["docker compose config"]
+}
