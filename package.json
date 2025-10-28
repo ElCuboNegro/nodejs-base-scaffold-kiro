@@ -85,7 +85,7 @@
   "author": "Development Team",
   "license": "PROPRIETARY",
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.9.1",
+    "@anthropic-ai/sdk": "^0.65.0",
     "axios": "^1.6.2",
     "compression": "^1.7.4",
     "config": "^3.3.9",
