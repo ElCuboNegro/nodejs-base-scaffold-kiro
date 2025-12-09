@@ -109,7 +109,7 @@
     "@cucumber/cucumber": "^12.2.0",
     "@jest/globals": "^29.7.0",
     "@types/jest": "^29.5.8",
-    "artillery": "^2.0.3",
+    "artillery": "^2.0.27",
     "chai": "^4.3.10",
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
