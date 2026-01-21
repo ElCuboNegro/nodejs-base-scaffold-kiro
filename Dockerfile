@@ -2,7 +2,7 @@
 # Follows Google JavaScript Style Guide and security best practices
 
 # Development stage with all tools and dependencies
-FROM node:24.10.0-alpine AS development
+FROM node:24.13.0-alpine AS development
 
 # Set working directory
 WORKDIR /app
@@ -65,7 +65,7 @@ ENV CUCUMBER_PUBLISH_ENABLED=false
 CMD ["npm", "run", "test:bdd"]
 
 # Production stage - minimal runtime
-FROM node:24.10.0-alpine AS production
+FROM node:24.13.0-alpine AS production
 
 # Set working directory
 WORKDIR /app
